@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Staff Media Manager | Aegis Learning Academy Bengaluru</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <!-- Top Announcement Bar -->
+  <header class="top-bar">
+    <div class="container top-bar-inner">
+      <div class="top-bar-notice">
+        <span class="pulse-badge"></span>
+        <span><strong>Staff Portal:</strong> Aegis Insights Administration</span>
+      </div>
+      <div class="top-bar-links">
+        <a href="media.html"><i class="fas fa-play-circle"></i> View Public Media Page</a>
+        <a href="index.html"><i class="fas fa-home"></i> Main Website</a>
+      </div>
+    </div>
+  </header>
+  <!-- Navigation -->
+  <nav class="main-nav">
+    <div class="container nav-container">
+      <a href="index.html" class="brand-logo">
+        <div class="brand-symbol"><i class="fas fa-graduation-cap"></i></div>
+        <div class="brand-text">
+          <h1>AEGIS</h1>
+          <span>Learning Academy   Bengaluru</span>
+        </div>
+      </a>
+      <ul class="desktop-nav-menu" aria-label="Main navigation">
+        <li><a href="about.html" class="nav-link">About Us</a></li>
+        <li><a href="index.html#how-we-teach" class="nav-link">How we teach</a></li>
+        <li><a href="index.html#classes" class="nav-link">Classes (6–10)</a></li>
+        <li><a href="index.html#teachers" class="nav-link">Our Teachers</a></li>
+        <li><a href="media.html" class="nav-link">Aegis Insights</a></li>
+        <li><a href="index.html#reviews" class="nav-link">Parent Reviews</a></li>
+        <li><a href="index.html#faq" class="nav-link">Common Questions</a></li>
+      </ul>
+      <ul class="nav-menu">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="about.html" class="nav-link">About Us</a></li>
+        <li><a href="programs.html" class="nav-link">Classes 6 to 10</a></li>
+        <li><a href="index.html#teachers" class="nav-link">Our Teachers</a></li>
+        <li><a href="media.html" class="nav-link">Aegis Insights</a></li>
+        <li><a href="contact.html" class="nav-link">Contact &amp; Admissions</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="media.html" class="btn btn-secondary btn-sm"><i class="fas fa-external-link-alt"></i> Public Library</a>
+        <button class="mobile-toggle"><i class="fas fa-bars"></i></button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Page Header -->
+  <section style="background: linear-gradient(180deg, #091220 0%, #0d1a33 100%); color: var(--white); padding: 3.25rem 0 2.75rem 0; text-align: center;">
+    <div class="container container-sm">
+      <span class="section-tag gold" style="margin-bottom: 0.75rem;">Internal Staff Portal</span>
+      <h1 class="hero-title" style="font-size: 2.35rem; margin-bottom: 0.5rem;">Aegis Insights Manager</h1>
+      <p style="font-size: 1rem; color: var(--slate-300);">
+        Sign in with your approved Google account to add, edit, publish, or manage academy podcasts and videos.
+      </p>
+    </div>
+  </section>
+
+  <!-- Main Admin Section -->
+  <main class="section-padding" style="background-color: var(--slate-50); min-height: 65vh;">
+    <div class="container">
+      <!-- Status / Feedback Banner -->
+      <div id="adminStatusBanner" class="admin-alert" hidden></div>
+
+      <!-- Signed-in User Bar -->
+      <div id="adminAuthBar" class="admin-auth-bar" hidden>
+        <div class="admin-auth-user">
+          <i class="fas fa-user-shield" style="color: var(--blue-600);"></i>
+          <span>Signed in as <strong id="adminSignedInUserText">Staff</strong></span>
+          <span id="adminUserRoleChip" class="media-badge admin-role-badge">PENDING</span>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm" data-admin-signout>
+          <i class="fas fa-sign-out-alt"></i> Sign Out
+        </button>
+      </div>
+
+      <!-- Panel 1: Placeholder Config / Local File Notice -->
+      <div id="adminConfigNotice" class="admin-card admin-center-card">
+        <div class="media-state-icon"><i class="fas fa-cog"></i></div>
+        <h2 id="adminNoticeTitle" class="admin-card-title">Firebase Setup Required</h2>
+        <p id="adminNoticeDesc" class="admin-card-subtitle">
+          To enable Google Sign-In and the Aegis Insights database, paste your Firebase Web App configuration into <code>assets/js/firebase-config.js</code> and follow the steps in <code>FIREBASE_SETUP.md</code>.
+        </p>
+      </div>
+
+      <!-- Panel 2: Signed Out -->
+      <div id="adminSignedOutPanel" class="admin-card admin-center-card" hidden>
+        <div class="media-state-icon"><i class="fas fa-lock"></i></div>
+        <h2 class="admin-card-title">Staff Sign-In</h2>
+        <p class="admin-card-subtitle">
+          Use your Google account to access the Aegis Learning Academy media dashboard. New staff accounts are placed in a pending state until approved by the academy owner.
+        </p>
+        <button type="button" id="adminGoogleSignInBtn" class="btn btn-primary btn-lg" style="margin-top: 1rem;">
+          <i class="fab fa-google"></i> Sign in with Google
+        </button>
+      </div>
+
+      <!-- Panel 3: Pending Approval -->
+      <div id="adminPendingPanel" class="admin-card admin-center-card" hidden>
+        <div class="media-state-icon"><i class="fas fa-hourglass-half"></i></div>
+        <h2 class="admin-card-title">Waiting for owner approval</h2>
+        <p class="admin-card-subtitle">
+          Your account (<strong id="pendingUserEmail"></strong>) has been registered with role <strong>pending</strong>. Please ask the academy owner to approve your account in the Team tab (or set your role to <code>owner</code> in the Firebase Console if you are the first owner).
+        </p>
+        <p class="admin-uid-box">
+          Account UID: <code id="pendingUserUid"></code>
+        </p>
+        <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; margin-top: 1.25rem;">
+          <button type="button" id="adminRefreshRoleBtn" class="btn btn-primary btn-sm">
+            <i class="fas fa-sync-alt"></i> Check Approval Status
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm" data-admin-signout>
+            <i class="fas fa-sign-out-alt"></i> Sign Out
+          </button>
+        </div>
+      </div>
+
+      <!-- Panel 4: Approved Staff / Owner Workspace -->
+      <div id="adminWorkspacePanel" hidden>
+        <!-- Workspace Navigation Tabs -->
+        <div class="admin-workspace-tabs">
+          <button type="button" id="adminTabMediaBtn" class="media-tab-btn active">
+            <i class="fas fa-photo-video"></i> Aegis Insights
+          </button>
+          <button type="button" id="adminTabTeamBtn" class="media-tab-btn" hidden>
+            <i class="fas fa-users-cog"></i> Team
+          </button>
+        </div>
+
+        <!-- Tab Pane 1: Media Form + Entries List -->
+        <div id="adminMediaPane" class="admin-workspace-grid">
+          <!-- Left: Add / Edit Media Form -->
+          <div id="adminFormCard" class="admin-card">
+            <h2 id="mediaFormHeading" class="admin-section-heading">Add New Podcast or Video</h2>
+            <form id="adminMediaForm" novalidate>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="mediaTypeSelect">Type *</label>
+                  <select id="mediaTypeSelect" class="form-select" required>
+                    <option value="video" selected>Video</option>
+                    <option value="podcast">Podcast</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="mediaSubjectSelect">Subject *</label>
+                  <select id="mediaSubjectSelect" class="form-select" required>
+                    <option value="Maths">Maths</option>
+                    <option value="Science">Science</option>
+                    <option value="Maths &amp; Science" selected>Maths &amp; Science</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <div class="admin-label-row">
+                  <label class="form-label" for="mediaTitleInput">Title *</label>
+                  <span id="titleCharCount" class="admin-char-count">0 / 120</span>
+                </div>
+                <input
+                  type="text"
+                  id="mediaTitleInput"
+                  class="form-input"
+                  maxlength="120"
+                  placeholder="e.g. Class 10 Trigonometry: Proving Identities Step by Step"
+                  required
+                >
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="mediaYoutubeInput">YouTube URL *</label>
+                <input
+                  type="url"
+                  id="mediaYoutubeInput"
+                  class="form-input"
+                  placeholder="https://www.youtube.com/watch?v=... or https://youtu.be/..."
+                  required
+                >
+                <p id="youtubeUrlFeedback" class="admin-field-hint">
+                  Paste a YouTube watch?v=, youtu.be/, /embed/, or /shorts/ link (unlisted links work too).
+                </p>
+              </div>
+
+              <!-- Live YouTube Embed Preview -->
+              <div id="adminYoutubePreviewWrap" class="admin-preview-wrap" hidden>
+                <span class="admin-preview-label">Live Player Preview (youtube-nocookie.com)</span>
+                <div id="adminYoutubePreviewPlayer" class="media-player-wrap admin-preview-player"></div>
+              </div>
+
+              <div class="form-group">
+                <div class="admin-label-row">
+                  <label class="form-label" for="mediaDescInput">Description (Plain Text)</label>
+                  <span id="descCharCount" class="admin-char-count">0 / 500</span>
+                </div>
+                <textarea
+                  id="mediaDescInput"
+                  class="form-textarea"
+                  rows="3"
+                  maxlength="500"
+                  placeholder="Brief summary of the chapters, formulas, or parent tips covered in this episode..."
+                ></textarea>
+              </div>
+
+              <div class="form-group">
+                <span class="form-label" style="display:block; margin-bottom:0.5rem;">Classes Covered * (Select at least one)</span>
+                <div class="admin-class-checkboxes">
+                  <label class="admin-checkbox-pill">
+                    <input type="checkbox" name="mediaClassTag" value="6">
+                    <span>Class 6</span>
+                  </label>
+                  <label class="admin-checkbox-pill">
+                    <input type="checkbox" name="mediaClassTag" value="7">
+                    <span>Class 7</span>
+                  </label>
+                  <label class="admin-checkbox-pill">
+                    <input type="checkbox" name="mediaClassTag" value="8">
+                    <span>Class 8</span>
+                  </label>
+                  <label class="admin-checkbox-pill">
+                    <input type="checkbox" name="mediaClassTag" value="9" checked>
+                    <span>Class 9</span>
+                  </label>
+                  <label class="admin-checkbox-pill">
+                    <input type="checkbox" name="mediaClassTag" value="10" checked>
+                    <span>Class 10</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="mediaStatusSelect">Publish Status *</label>
+                <select id="mediaStatusSelect" class="form-select" required>
+                  <option value="draft" selected>Draft (Hidden from public)</option>
+                  <option value="published">Published (Visible on site)</option>
+                </select>
+              </div>
+
+              <div class="admin-form-actions">
+                <button type="submit" id="mediaFormSubmitBtn" class="btn btn-gold">
+                  Save Entry
+                </button>
+                <button type="button" id="mediaFormCancelBtn" class="btn btn-secondary" hidden>
+                  Cancel Edit
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Right: Existing Entries List -->
+          <div class="admin-card">
+            <div class="admin-list-header">
+              <h2 class="admin-section-heading" style="margin-bottom:0;">All Entries</h2>
+              <span id="adminMediaCount" class="media-count-label">0 total</span>
+            </div>
+            <div id="adminMediaList" class="admin-entries-list"></div>
+          </div>
+        </div>
+
+        <!-- Tab Pane 2: Owner-Only Team Management -->
+        <div id="adminTeamPane" class="admin-card" hidden>
+          <h2 class="admin-section-heading">Team &amp; Staff Roles (Owner Only)</h2>
+          <p class="admin-card-subtitle" style="margin-bottom: 1.5rem;">
+            Approve staff members as <strong>admin</strong> so they can add, edit, publish, and delete podcasts and videos, or switch them back to <strong>pending</strong> to revoke access. Your own <strong>owner</strong> role cannot be changed from here.
+          </p>
+          <div id="adminTeamList" class="admin-team-list"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="main-footer">
+    <div class="container footer-bottom" style="border:none; padding-top:0;">
+      <div>&copy; 2026 Aegis Learning Academy Bengaluru. All Rights Reserved.</div>
+      <div style="display:flex; gap:1.5rem; flex-wrap:wrap; justify-content:center;">
+        <a href="index.html">Home</a>
+        <a href="media.html">Aegis Insights</a>
+        <a href="privacy-policy.html">Privacy Policy</a>
+        <a href="terms-and-conditions.html">Terms</a>
+      </div>
+    </div>
+  </footer>
+  <script src="assets/js/main.js"></script>
+  <script>
+    if (window.location.protocol === 'file:') {
+      var t = document.getElementById('adminNoticeTitle');
+      var d = document.getElementById('adminNoticeDesc');
+      if (t) t.textContent = 'Local Web Server Required (Opened via file://)';
+      if (d) {
+        d.textContent =
+          'You opened admin.html directly from your folder (file://). Browsers block ES modules and Google Sign-In on file:// URLs. Open a terminal in this folder, run "python -m http.server 8000", and open http://localhost:8000/admin.html — plus paste your Firebase keys into assets/js/firebase-config.js.';
+      }
+    }
+  </script>
+  <script type="module" src="assets/js/admin.js"></script>
+</body>
+</html>

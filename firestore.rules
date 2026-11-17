@@ -1,0 +1,103 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function userDocExists() {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function currentUserRole() {
+      return userDocExists()
+        ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role
+        : null;
+    }
+
+    function isOwner() {
+      return currentUserRole() == 'owner';
+    }
+
+    function isStaff() {
+      return currentUserRole() in ['admin', 'owner'];
+    }
+
+    function isValidClassTags(tags) {
+      return tags is list &&
+        tags.size() >= 1 &&
+        tags.size() <= 5 &&
+        tags.hasOnly(['6', '7', '8', '9', '10']);
+    }
+
+    function isValidMediaPayload(data) {
+      return data.keys().hasAll([
+          'type', 'title', 'description', 'youtubeId',
+          'classTags', 'subject', 'status',
+          'createdBy', 'createdAt', 'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'type', 'title', 'description', 'youtubeId',
+          'classTags', 'subject', 'status',
+          'createdBy', 'createdAt', 'updatedAt'
+        ]) &&
+        data.type in ['video', 'podcast'] &&
+        data.status in ['draft', 'published'] &&
+        data.subject in ['Maths', 'Science', 'Maths & Science'] &&
+        data.title is string &&
+        data.title.size() >= 1 &&
+        data.title.size() <= 120 &&
+        data.description is string &&
+        data.description.size() <= 500 &&
+        data.youtubeId is string &&
+        data.youtubeId.matches('^[A-Za-z0-9_-]{11}$') &&
+        isValidClassTags(data.classTags) &&
+        data.createdBy is string &&
+        data.updatedAt == request.time;
+    }
+
+    match /media/{mediaId} {
+      allow read: if resource.data.status == 'published' || isStaff();
+
+      allow create: if isStaff() &&
+        isValidMediaPayload(request.resource.data) &&
+        request.resource.data.createdBy == request.auth.uid &&
+        request.resource.data.createdAt == request.time;
+
+      allow update: if isStaff() &&
+        isValidMediaPayload(request.resource.data) &&
+        request.resource.data.createdBy == resource.data.createdBy &&
+        request.resource.data.createdAt == resource.data.createdAt;
+
+      allow delete: if isStaff();
+    }
+
+    match /users/{uid} {
+      allow read: if (isSignedIn() && request.auth.uid == uid) || isOwner();
+
+      allow create: if isSignedIn() &&
+        request.auth.uid == uid &&
+        request.resource.data.keys().hasAll(['email', 'displayName', 'role', 'createdAt']) &&
+        request.resource.data.keys().hasOnly(['email', 'displayName', 'role', 'createdAt']) &&
+        request.resource.data.email is string &&
+        request.resource.data.email.size() <= 254 &&
+        request.resource.data.displayName is string &&
+        request.resource.data.displayName.size() <= 120 &&
+        request.resource.data.role == 'pending' &&
+        request.resource.data.createdAt == request.time;
+
+      allow update: if isOwner() &&
+        request.auth.uid != uid &&
+        resource.data.role != 'owner' &&
+        request.resource.data.keys().hasOnly(['email', 'displayName', 'role', 'createdAt']) &&
+        request.resource.data.email == resource.data.email &&
+        request.resource.data.displayName == resource.data.displayName &&
+        request.resource.data.createdAt == resource.data.createdAt &&
+        request.resource.data.role in ['admin', 'pending'];
+
+      allow delete: if false;
+    }
+  }
+}
